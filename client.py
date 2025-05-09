@@ -16,25 +16,26 @@ def str_to_int(str):
 class Client:
     # collect client info and what server he want
     def __init__(self):
-        print("Welcome, please enter some information before chatting")
+        print("welcome")
         
         # get server address to connect
         self.address = None
         while not self.address:
-            self.address = input("Type server address: ")
+            self.address = input("server address? ")
         
         # get server port
         self.port = None
         while not self.port:
-            self.port = str_to_int(input("Type server port: "))
+            self.port = str_to_int(input("server port? "))
         
         # get optional username
-        self.username = input("Type your username (optional): ")
+        self.username = input("type your username (optional): ")
         if not self.username:
             self.username = self.address
     
     # "connect" to server (setting up socket to future communications)
     def connect(self):
+        print("connecting to server...")
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     
     # get any new messages without a big delay
@@ -66,12 +67,14 @@ class Client:
         if message.lower() == "/dconnect":
             # dissconect
             self.close()
-        elif message.lower() == "/announce":
+
+        if not message.lower().find("/announce"):
             # make sound on message
             message = message + "\a"
-        else: # default message
-            data = f"{self.username}: {message}"
-            self.socket.sendto(data.encode(), (self.address, self.port))
+        
+        # default message
+        data = f"{self.username}: {message}"
+        self.socket.sendto(data.encode(), (self.address, self.port))
     
     # close connection
     def close(self):

@@ -1,5 +1,6 @@
 # imports
 import socket
+import threading
 
 # functions
 # convert string to int
@@ -13,17 +14,17 @@ def str_to_int(str):
 class Server:
     # get info about server
     def __init__(self):
-        print("Welcome, please enter information to initialize server")
+        print("welcome, please type information to initialize server")
         
         # get ip address
         self.address = None
         while not self.address:
-            self.address = input("Type server address: ")
+            self.address = input("type server address: ")
         
         # get port (can be any)
         self.port = None
         while not self.port:
-            self.port = str_to_int(input("Type server port: "))
+            self.port = str_to_int(input("type server port: "))
         
         # connected ips
         self.connected = []
@@ -32,10 +33,26 @@ class Server:
     def host(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind((self.address, self.port))
-        self.socket.setblocking(False)
         
-        print(f"Server initizialized on {self.address}:{self.port}")
-        
+        print(f"server initizialized on {self.address}:{self.port}")
+    
+    # manage server
+    def manage(self):
+        while True:
+            # managing by commands
+            cmd = input("/")
+            
+            if cmd.lower() == "activate":
+                # server.activate()
+                threading.Thread(target=self.activate).start()
+            elif cmd.lower() == "disable":
+                # server.disable()
+                self.disable()
+            elif cmd.lower() == "close":
+                # server.close()
+                self.socket.close()
+                break
+    
     # activate to forward messages to all connected ips
     def activate(self):
         self.active = True
@@ -59,18 +76,14 @@ class Server:
                 pass
     
     # deactivate message forwarding
-    def deactivate(self):
+    def disable(self):
         self.active = False
-    
-    # close server
-    def close(self):
-        self.socket.close()
             
 # server initilization
 def main():
     server = Server()
     server.host()
-    server.activate()
+    server.manage()
 
 if __name__ == "__main__":
     main()
